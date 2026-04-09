@@ -475,7 +475,14 @@ app.post('/webhooks/blind-agents', async (req, res) => {
     'ticket.created':        `🎫 *New ticket:* <${data.page_url}|${data.title}> — ${data.priority} priority`,
     'ticket.status_changed': `🔄 *Ticket updated:* ${data.title} → ${data.status}`,
     'ticket.resolved':       `✅ *Ticket resolved:* ${data.title}`,
+    'ticket.closed':         `🔒 *Ticket closed:* ${data.title}`,
     'contact.created':       `👤 *New contact:* ${data.name} (${data.email})`,
+    'contact.updated':       `✏️ *Contact updated:* ${data.name}`,
+    'contact.assigned':      `📋 *Contact assigned:* ${data.name}`,
+    'contact.tag_added':     `🏷️ *Tag added:* ${data.tag} → ${data.contact_id}`,
+    'contact.comment_added': `💬 *New comment on contact:* ${data.content}`,
+    'conversation.created':  `💬 *New conversation started*`,
+    'conversation.closed':   `🔒 *Conversation closed*`,
   };
 
   await fetch(SLACK_URL!, {
@@ -573,8 +580,11 @@ Add a **Respond to Webhook** node at the end — Response Code `200`. Without it
 | `ticket.created` | Create Jira / Linear issue |
 | `ticket.created` (high priority) | Send Gmail alert to on-call |
 | `ticket.resolved` | Append row to Google Sheet |
-| `contact.created` | Sync contact to HubSpot / Mailchimp |
 | `ticket.status_changed` | Update Notion database row |
+| `contact.created` | Sync contact to HubSpot / Mailchimp |
+| `contact.tag_added` | Enroll contact in an email sequence |
+| `contact.comment_added` | Log internal notes to Notion |
+| `conversation.closed` | Trigger a CSAT survey email |
 | Any event | POST to Zapier catch hook for further routing |
 
 ### Self-hosting n8n with Docker
@@ -603,15 +613,74 @@ Every event sends this JSON body:
   "id": "evt_01HXYZ...",
   "event": "ticket.created",
   "created_at": "2026-04-09T03:00:00Z",
-  "data": {
-    "id": "tkt_01HXYZ...",
-    "title": "Button not working on checkout",
-    "status": "open",
-    "priority": "high",
-    "type": "bug",
-    "contact": { "name": "Jane Doe", "email": "jane@example.com" },
-    "page_url": "https://yoursite.com/checkout"
-  }
+  "data": { ... }
+}
+```
+
+The `data` shape depends on the event type:
+
+**Ticket events** (`ticket.created`, `ticket.status_changed`, `ticket.resolved`, `ticket.closed`)
+
+```json
+{
+  "id": "uuid",
+  "org_id": "uuid",
+  "contact_id": "uuid or null",
+  "title": "Button not working on checkout",
+  "description": "Steps to reproduce...",
+  "status": "open",
+  "priority": "high",
+  "type": "bug",
+  "page_url": "https://yoursite.com/checkout",
+  "created_at": "2026-04-09T03:00:00+00:00",
+  "updated_at": "2026-04-09T03:00:00+00:00"
+}
+```
+
+For `ticket.status_changed`, `ticket.resolved`, and `ticket.closed`, the payload also includes:
+
+```json
+{
+  "previous_status": "open",
+  "changed_by_id": "uuid or null"
+}
+```
+
+**Contact events** (`contact.created`, `contact.updated`, `contact.assigned`)
+
+```json
+{
+  "contact_id": "uuid",
+  "email": "jane@example.com",
+  "name": "Jane Doe",
+  "phone": "1234567890"
+}
+```
+
+For `contact.assigned`, the payload also includes:
+```json
+{
+  "assigned_to_id": "uuid or null"
+}
+```
+
+**Contact tag events** (`contact.tag_added`, `contact.tag_removed`)
+
+```json
+{
+  "contact_id": "uuid",
+  "tag": "vip"
+}
+```
+
+**Contact comment event** (`contact.comment_added`)
+
+```json
+{
+  "contact_id": "uuid",
+  "comment_id": "uuid",
+  "author_id": "uuid",
+  "content": "Followed up via email."
 }
 ```
 
@@ -620,11 +689,17 @@ Every event sends this JSON body:
 | Event | Fired when |
 |---|---|
 | `ticket.created` | A new ticket is submitted |
-| `ticket.status_changed` | Ticket status is updated |
+| `ticket.status_changed` | Ticket status is updated (any change) |
 | `ticket.resolved` | Ticket is marked resolved |
 | `ticket.closed` | Ticket is closed |
 | `contact.created` | A new contact is registered |
+| `contact.updated` | Contact profile fields are edited |
+| `contact.assigned` | Contact is assigned to a team member |
+| `contact.tag_added` | A tag is added to a contact |
+| `contact.tag_removed` | A tag is removed from a contact |
+| `contact.comment_added` | An internal comment is posted on a contact |
 | `conversation.created` | A new chat conversation starts |
+| `conversation.closed` | A conversation is closed |
 
 ---
 
