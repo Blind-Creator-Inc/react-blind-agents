@@ -15,6 +15,7 @@ React component for the [Blind Agents](https://blindagents.com) pixel widget —
 - [Next.js — App Router](#nextjs--app-router)
 - [Next.js — Pages Router](#nextjs--pages-router)
 - [Authenticated users](#authenticated-users)
+- [All three widgets together](#all-three-widgets-together)
 - [Props reference](#props-reference)
 - [HTML / Any website (script tag)](#html--any-website-script-tag)
 - [Shopify](#shopify)
@@ -68,14 +69,13 @@ Paste this before `</body>` in any HTML file — no npm needed:
 
 ```tsx
 // src/App.tsx
-import { BlindAgentsWidget } from '@duvandroid/react-blind-agents';
+import { BlindAgents } from '@duvandroid/react-blind-agents';
 
 export default function App() {
   return (
-    <>
+    <BlindAgents apiKey="YOUR_API_KEY">
       <MyRoutes />
-      <BlindAgentsWidget
-        apiKey="YOUR_API_KEY"
+      <BlindAgents.Report
         primaryColor="#e11d48"
         title="Help Center"
         reportBtnText="Report an issue"
@@ -83,12 +83,12 @@ export default function App() {
         btnTooltip="Report an issue"
         emptyText="No issues reported yet."
       />
-    </>
+    </BlindAgents>
   );
 }
 ```
 
-Place `<BlindAgentsWidget>` once at the App root — it renders nothing in the DOM, only injects the script.
+Place `<BlindAgents>` once at the App root — the widget components render nothing in the DOM, only inject their scripts.
 
 ---
 
@@ -98,21 +98,22 @@ Import from the `/next` subpath — it uses `next/script` internally for correct
 
 ```tsx
 // app/layout.tsx
-import { BlindAgentsWidget } from '@duvandroid/react-blind-agents/next';
+import { BlindAgents } from '@duvandroid/react-blind-agents/next';
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <body>
         {children}
-        <BlindAgentsWidget
-          apiKey="YOUR_API_KEY"
-          primaryColor="#e11d48"
-          title="Help Center"
-          reportBtnText="Report an issue"
-          btnEmoji="🔴"
-          strategy="afterInteractive"
-        />
+        <BlindAgents apiKey="YOUR_API_KEY">
+          <BlindAgents.Report
+            primaryColor="#e11d48"
+            title="Help Center"
+            reportBtnText="Report an issue"
+            btnEmoji="🔴"
+            strategy="afterInteractive"
+          />
+        </BlindAgents>
       </body>
     </html>
   );
@@ -126,13 +127,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 ```tsx
 // pages/_app.tsx
 import type { AppProps } from 'next/app';
-import { BlindAgentsWidget } from '@duvandroid/react-blind-agents/next';
+import { BlindAgents } from '@duvandroid/react-blind-agents/next';
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
     <>
       <Component {...pageProps} />
-      <BlindAgentsWidget apiKey="YOUR_API_KEY" primaryColor="#e11d48" />
+      <BlindAgents apiKey="YOUR_API_KEY">
+        <BlindAgents.Report primaryColor="#e11d48" />
+      </BlindAgents>
     </>
   );
 }
@@ -142,46 +145,184 @@ export default function App({ Component, pageProps }: AppProps) {
 
 ## Authenticated users
 
-Pass the logged-in user's phone or email via `userWhatsapp` to skip the identity verification step inside the widget:
+Use `userWhatsapp` to skip the in-widget identity verification step, and `externalId` to link the session to your own database record.
 
 ```tsx
-// components/ReportWidget.tsx
+// components/Widgets.tsx
 'use client';
-import { BlindAgentsWidget } from '@duvandroid/react-blind-agents/next';
+import { BlindAgents } from '@duvandroid/react-blind-agents/next';
 import { useAuth } from './AuthProvider';
 
-export function ReportWidget() {
+export function Widgets() {
   const { user } = useAuth();
   return (
-    <BlindAgentsWidget
+    <BlindAgents
       apiKey="YOUR_API_KEY"
-      primaryColor="#e11d48"
-      userWhatsapp={user?.phone ?? user?.email ?? ''}
-    />
+      /**
+       * userWhatsapp accepts a phone number OR email address.
+       * Passing it skips the verification prompt — the user is already known.
+       */
+      userWhatsapp={user?.phone ?? user?.email}
+      /**
+       * externalId is your app's internal user ID (DB primary key, UUID, etc.).
+       * Stored as contact.external_id in Blind Agents so you can look up
+       * tickets and conversations by your own ID via the REST API.
+       * Works in Report, Chat, and Guide widgets.
+       */
+      externalId={user?.id}
+    >
+      <BlindAgents.Report primaryColor="#e11d48" />
+      <BlindAgents.Chat agentId="YOUR_AGENT_ID" />
+    </BlindAgents>
   );
 }
 ```
 
-Place `<ReportWidget />` **inside** your `AuthProvider` tree so `useAuth()` has access to the context.
+Place `<Widgets />` **inside** your `AuthProvider` tree so `useAuth()` has access to the context.
+
+---
+
+## All three widgets together
+
+```tsx
+import { BlindAgents } from '@duvandroid/react-blind-agents';
+
+export default function App() {
+  return (
+    <BlindAgents
+      apiKey="YOUR_API_KEY"
+      userWhatsapp="user@example.com"
+      externalId="usr_123"
+    >
+      <MyRoutes />
+
+      {/* Bug reporter — bottom-right (default) */}
+      <BlindAgents.Report
+        primaryColor="#e11d48"
+        title="Help Center"
+        reportBtnText="Report an issue"
+        btnEmoji="🔴"
+      />
+
+      {/* Webchat — bottom-left */}
+      <BlindAgents.Chat
+        agentId="YOUR_AGENT_ID"
+        primaryColor="#625df5"
+        position="bottom-left"
+        fontFamily="Rounded"
+      />
+
+      {/* Product guides — config is fully dashboard-driven */}
+      <BlindAgents.Guide />
+    </BlindAgents>
+  );
+}
+```
 
 ---
 
 ## Props reference
 
-| Prop | Type | Required | Default | Description |
-|---|---|---|---|---|
-| `apiKey` | `string` | ✅ | — | Your Blind Agents public API key (`ba_...`) |
-| `primaryColor` | `string` | — | — | Accent color (any valid CSS color) |
-| `title` | `string` | — | `"Help Center"` | Widget panel header title |
-| `reportBtnText` | `string` | — | `"Report an issue"` | Report button label |
-| `btnEmoji` | `string` | — | — | Emoji on the floating launcher button |
-| `btnTooltip` | `string` | — | — | Tooltip on the launcher button |
-| `emptyText` | `string` | — | `"No issues reported yet."` | Text shown when there are no reports |
-| `userWhatsapp` | `string` | — | — | Pre-fill user phone/email — skips identity verification |
-| `strategy` | `"afterInteractive" \| "lazyOnload" \| "beforeInteractive"` | — | `"afterInteractive"` | Script loading strategy |
-| `src` | `string` | — | `"https://cdn.blindagents.com/report.js"` | Override CDN URL (self-hosting) |
-| `onLoad` | `() => void` | — | — | Called when the script loads |
-| `onError` | `(error: Error) => void` | — | — | Called if the script fails to load |
+### `<BlindAgents>` (root provider)
+
+All props are inherited by child widgets unless overridden at the widget level.
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `apiKey` | `string` | **required** | Your Blind Agents public API key (`ba_...`) |
+| `userWhatsapp` | `string` | — | Pre-fill the user's phone number or email. When set, the in-widget verification prompt is skipped entirely. |
+| `externalId` | `string` | — | Your app's internal user ID. Stored as `contact.external_id` so you can look up contacts by your own ID via the REST API. Does **not** skip the verification prompt on its own — combine with `userWhatsapp` for that. Supported by Report, Chat, and Guide. |
+| `apiUrl` | `string` | `https://api.blindagents.com` | Override the API endpoint (self-hosting / proxy) |
+| `cdnBase` | `string` | `https://cdn.blindagents.com` | Override the CDN base URL (self-hosting) |
+| `strategy` | `"afterInteractive" \| "lazyOnload" \| "beforeInteractive"` | `"afterInteractive"` | Script loading strategy |
+
+---
+
+### `<BlindAgents.Report>`
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `primaryColor` | `string` | — | Accent color (any valid CSS color) |
+| `title` | `string` | `"Help Center"` | Widget panel header title |
+| `reportBtnText` | `string` | `"Report an issue"` | Report button label |
+| `btnEmoji` | `string` | — | Emoji on the floating launcher button |
+| `iconUrl` | `string` | — | Image URL for the launcher button (replaces emoji) |
+| `btnTooltip` | `string` | — | Tooltip on the launcher button |
+| `emptyText` | `string` | `"No issues reported yet."` | Text shown when there are no reports |
+| `position` | `WidgetPosition` | `"bottom-right"` | Floating button position (preset or `{bottom, right, …}`) |
+| `anchor` | `string` | — | CSS selector — mount inside an element instead of `<body>` |
+| `bubbleSize` | `number` | `56` | Launcher button diameter in px |
+| `panelWidth` | `string` | — | Panel width (any CSS length, e.g. `"380px"`) |
+| `panelHeight` | `string` | — | Panel height (any CSS length, e.g. `"600px"`) |
+| `userWhatsapp` | `string` | — | Per-widget override (inherits from `<BlindAgents>`) |
+| `externalId` | `string` | — | Per-widget override |
+| `apiUrl` | `string` | — | Per-widget override |
+| `cdnBase` | `string` | — | Per-widget override |
+| `strategy` | see above | — | Per-widget override |
+| `onLoad` | `() => void` | — | Called when the script loads |
+| `onError` | `(error: Error) => void` | — | Called if the script fails to load |
+
+---
+
+### `<BlindAgents.Chat>`
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `agentId` | `string` | — | The agent UUID from your Blind Agents dashboard |
+| `primaryColor` | `string` | — | Accent color (any valid CSS color) |
+| `btnEmoji` | `string` | — | Emoji on the floating launcher button |
+| `iconUrl` | `string` | — | Image URL for the launcher button (replaces emoji) |
+| `btnTooltip` | `string` | — | Tooltip on the launcher button |
+| `greeting` | `string` | — | Greeting shown before the user sends a message |
+| `placeholder` | `string` | — | Input placeholder text |
+| `fontSize` | `string` | — | Font size for chat text, e.g. `"14px"` |
+| `fontFamily` | `string` | — | Font preset: `"System"` · `"Serif"` · `"Mono"` · `"Rounded"`, or a custom stack |
+| `position` | `WidgetPosition` | `"bottom-right"` | Floating button position |
+| `anchor` | `string` | — | CSS selector — mount inside an element instead of `<body>` |
+| `bubbleSize` | `number` | `56` | Launcher button diameter in px |
+| `panelWidth` | `string` | — | Panel width (any CSS length) |
+| `panelHeight` | `string` | — | Panel height (any CSS length) |
+| `userWhatsapp` | `string` | — | Per-widget override |
+| `externalId` | `string` | — | Per-widget override |
+| `apiUrl` | `string` | — | Per-widget override |
+| `cdnBase` | `string` | — | Per-widget override |
+| `strategy` | see above | — | Per-widget override |
+| `onLoad` | `() => void` | — | Called when the script loads |
+| `onError` | `(error: Error) => void` | — | Called if the script fails to load |
+
+---
+
+### `<BlindAgents.Guide>`
+
+The Guide widget reads its module configuration from the Blind Agents dashboard. No extra props are required, but you can still pass user identity, layout, and loading props.
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `position` | `WidgetPosition` | `"bottom-right"` | Guide launcher position |
+| `anchor` | `string` | — | CSS selector — mount inside an element |
+| `bubbleSize` | `number` | `56` | Launcher button diameter in px |
+| `panelWidth` | `string` | — | Panel width |
+| `panelHeight` | `string` | — | Panel height |
+| `userWhatsapp` | `string` | — | Per-widget override |
+| `externalId` | `string` | — | Per-widget override |
+| `apiUrl` | `string` | — | Per-widget override |
+| `cdnBase` | `string` | — | Per-widget override |
+| `strategy` | see above | — | Per-widget override |
+| `onLoad` | `() => void` | — | Called when the script loads |
+| `onError` | `(error: Error) => void` | — | Called if the script fails to load |
+
+---
+
+### `WidgetPosition` type
+
+```ts
+type WidgetPosition =
+  | 'bottom-right'  // default
+  | 'bottom-left'
+  | 'top-right'
+  | 'top-left'
+  | Record<string, string>; // custom CSS e.g. { bottom: "20px", right: "80px" }
+```
 
 ### Why two import paths?
 
@@ -208,7 +349,9 @@ No npm required. Paste before `</body>`:
   data-btn-emoji="🔴"
   data-btn-tooltip="Report an issue"
   data-empty-text="No issues reported yet."
-  data-user-whatsapp="">
+  data-user-whatsapp=""
+  data-user-email=""
+  data-user-full-name="">
 </script>
 ```
 
@@ -231,11 +374,14 @@ The `data-*` attribute names map 1:1 to the React props (kebab-case → camelCas
   data-report-btn-text="Report an issue"
   data-btn-emoji="🔴"
   data-btn-tooltip="Report an issue"
-  data-user-whatsapp="{{ customer.phone | default: '' }}">
+  data-user-whatsapp="{{ customer.phone | default: '' }}"
+  data-user-email="{{ customer.email | default: '' }}"
+  data-user-full-name="{{ customer.name | default: '' }}"
+  data-external-id="{{ customer.id | default: '' }}">
 </script>
 ```
 
-The `{{ customer.phone }}` Liquid variable auto-fills logged-in customer's phone — skipping identity verification for authenticated shoppers.
+The Liquid variables auto-fill logged-in customer data — skipping identity verification for authenticated shoppers.
 
 For Shopify Plus headless stores (Hydrogen / Remix), use the React npm package instead.
 
@@ -244,7 +390,7 @@ For Shopify Plus headless stores (Hydrogen / Remix), use the React npm package i
 ## Lovable
 
 **Option A — Prompt Lovable:**
-> "Install @duvandroid/react-blind-agents and add a BlindAgentsWidget to App.tsx with apiKey='YOUR_API_KEY' and primaryColor='#e11d48'"
+> "Install @duvandroid/react-blind-agents and add a BlindAgents provider with Report and Chat widgets to App.tsx with apiKey='YOUR_API_KEY' and primaryColor='#e11d48'"
 
 **Option B — Manual (index.html):**
 ```html

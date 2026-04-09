@@ -1,6 +1,6 @@
 {
   "name": "@duvandroid/react-blind-agents",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "description": "React component for the Blind Agents pixel widget — bug reporter, webchat, and product guides.",
   "author": "Blind Agents <hola@blindagents.com>",
   "license": "MIT",

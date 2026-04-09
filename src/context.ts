@@ -5,6 +5,7 @@ export interface BlindAgentsContextValue {
   apiKey: string;
   userWhatsapp?: string;
   externalId?: string;
+  apiUrl?: string;
   cdnBase: string;
   strategy: 'afterInteractive' | 'lazyOnload' | 'beforeInteractive';
 }

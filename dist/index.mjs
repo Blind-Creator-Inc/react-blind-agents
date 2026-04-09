@@ -66,6 +66,7 @@ function Report({
   panelHeight,
   userWhatsapp: localWhatsapp,
   externalId,
+  apiUrl: localApiUrl,
   cdnBase: localCdn,
   strategy: localStrategy,
   onLoad,
@@ -75,8 +76,10 @@ function Report({
   const src = `${localCdn ?? ctx.cdnBase}/report.js`;
   const wa = localWhatsapp ?? ctx.userWhatsapp;
   const eid = externalId ?? ctx.externalId;
+  const url = localApiUrl ?? ctx.apiUrl;
   useScript(src, {
     "data-api-key": ctx.apiKey,
+    "data-api-url": url,
     "data-primary-color": primaryColor,
     "data-title": title,
     "data-report-btn-text": reportBtnText,
@@ -111,6 +114,7 @@ function Chat({
   panelHeight,
   userWhatsapp: localWhatsapp,
   externalId,
+  apiUrl: localApiUrl,
   cdnBase: localCdn,
   strategy: localStrategy,
   onLoad,
@@ -120,8 +124,10 @@ function Chat({
   const src = `${localCdn ?? ctx.cdnBase}/chat.js`;
   const wa = localWhatsapp ?? ctx.userWhatsapp;
   const eid = externalId ?? ctx.externalId;
+  const url = localApiUrl ?? ctx.apiUrl;
   useScript(src, {
     "data-api-key": ctx.apiKey,
+    "data-api-url": url,
     "data-agent-id": agentId,
     "data-primary-color": primaryColor,
     "data-btn-emoji": btnEmoji,
@@ -143,6 +149,13 @@ function Chat({
 }
 function Guide({
   userWhatsapp: localWhatsapp,
+  externalId,
+  apiUrl: localApiUrl,
+  position,
+  anchor,
+  bubbleSize,
+  panelWidth,
+  panelHeight,
   cdnBase: localCdn,
   strategy: localStrategy,
   onLoad,
@@ -151,9 +164,18 @@ function Guide({
   const ctx = React.useContext(BlindAgentsContext);
   const src = `${localCdn ?? ctx.cdnBase}/guide.js`;
   const wa = localWhatsapp ?? ctx.userWhatsapp;
+  const eid = externalId ?? ctx.externalId;
+  const url = localApiUrl ?? ctx.apiUrl;
   useScript(src, {
     "data-api-key": ctx.apiKey,
-    "data-user-whatsapp": wa
+    "data-api-url": url,
+    "data-user-whatsapp": wa,
+    "data-external-id": eid,
+    "data-position": serializePosition(position),
+    "data-anchor": anchor,
+    "data-bubble-size": bubbleSize != null ? String(bubbleSize) : void 0,
+    "data-panel-width": panelWidth,
+    "data-panel-height": panelHeight
   }, localStrategy ?? ctx.strategy, onLoad, onError);
   return null;
 }
@@ -161,11 +183,12 @@ function BlindAgents({
   apiKey,
   userWhatsapp,
   externalId,
+  apiUrl,
   cdnBase = CDN_BASE,
   strategy = "afterInteractive",
   children
 }) {
-  return /* @__PURE__ */ jsx(BlindAgentsContext.Provider, { value: { apiKey, userWhatsapp, externalId, cdnBase, strategy }, children });
+  return /* @__PURE__ */ jsx(BlindAgentsContext.Provider, { value: { apiKey, userWhatsapp, externalId, apiUrl, cdnBase, strategy }, children });
 }
 BlindAgents.Report = Report;
 BlindAgents.Chat = Chat;

@@ -45,10 +45,22 @@ export interface WidgetLayoutProps {
 export interface BaseWidgetProps extends WidgetLayoutProps {
   /** Your Blind Agents public API key (ba_...) */
   apiKey: string;
-  /** Pre-filled WhatsApp number to skip identity verification */
+  /**
+   * Pre-fill the user's phone number or email address.
+   * Passed to the SDK as the WhatsApp/phone identity field.
+   * When set, the in-widget verification prompt is skipped entirely.
+   */
   userWhatsapp?: string;
-  /** Your internal user/account ID — links widget sessions to your own CRM records */
+  /**
+   * Your app's internal user ID (e.g. database PK or UUID).
+   * Stored as `contact.external_id` in Blind Agents so you can look up
+   * tickets and conversations by your own ID via the REST API.
+   * Does NOT skip the verification prompt — combine with `userWhatsapp` for that.
+   * Supported by Report, Chat, and Guide widgets.
+   */
   externalId?: string;
+  /** Override the API base URL (useful for self-hosting or proxying) @default "https://api.blindagents.com" */
+  apiUrl?: string;
   /** Override the CDN base URL (useful for self-hosting) */
   cdnBase?: string;
   /** Script loading strategy @default "afterInteractive" */
@@ -89,9 +101,13 @@ export interface ChatWidgetProps extends Omit<BaseWidgetProps, 'apiKey'>, Visual
   greeting?: string;
   /** Placeholder text in the message input */
   placeholder?: string;
-  /** Font size preset e.g. "14px" */
+  /** Font size for chat messages e.g. "14px" */
   fontSize?: string;
-  /** Font family preset: "System" | "Serif" | "Mono" | "Rounded" */
+  /**
+   * Font family preset for the chat UI.
+   * Built-in presets: `"System"` · `"Serif"` · `"Mono"` · `"Rounded"`
+   * Pass any other string to use a custom font stack.
+   */
   fontFamily?: string;
 }
 
