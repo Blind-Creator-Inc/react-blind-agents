@@ -4,6 +4,7 @@ import { CDN_BASE } from './types';
 export interface BlindAgentsContextValue {
   apiKey: string;
   userWhatsapp?: string;
+  externalId?: string;
   cdnBase: string;
   strategy: 'afterInteractive' | 'lazyOnload' | 'beforeInteractive';
 }
