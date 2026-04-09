@@ -1,4 +1,10 @@
-// Plain React entry — Vite, CRA, etc.
-// For Next.js use: import { BlindAgentsWidget } from 'react-blind-agents/next'
-export { BlindAgentsWidget } from './ReactBlindAgentsWidget';
-export type { BlindAgentsWidgetProps } from './types';
+// Plain React entry — Vite, CRA, Remix, etc.
+// For Next.js use: import { BlindAgents } from '@duvandroid/react-blind-agents/next'
+export { BlindAgents, BlindAgentsWidget } from './ReactBlindAgents';
+export type {
+  BlindAgentsProps,
+  ReportWidgetProps,
+  ChatWidgetProps,
+  GuideWidgetProps,
+  BlindAgentsWidgetProps,
+} from './types';

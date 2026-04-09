@@ -1,7 +1,9 @@
 "use strict";
+var __create = Object.create;
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
 var __getOwnPropNames = Object.getOwnPropertyNames;
+var __getProtoOf = Object.getPrototypeOf;
 var __hasOwnProp = Object.prototype.hasOwnProperty;
 var __export = (target, all) => {
   for (var name in all)
@@ -15,51 +17,54 @@ var __copyProps = (to, from, except, desc) => {
   }
   return to;
 };
+var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(
+  // If the importer is in node compatibility mode or this is not an ESM
+  // file that has been converted to a CommonJS file using a Babel-
+  // compatible transform (i.e. "__esModule" has not been set), then set
+  // "default" to the CommonJS "module.exports" for node compatibility.
+  isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
+  mod
+));
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 
 // src/index.ts
 var src_exports = {};
 __export(src_exports, {
+  BlindAgents: () => BlindAgents,
   BlindAgentsWidget: () => BlindAgentsWidget
 });
 module.exports = __toCommonJS(src_exports);
 
-// src/ReactBlindAgentsWidget.tsx
+// src/ReactBlindAgents.tsx
+var import_react2 = __toESM(require("react"));
+
+// src/context.ts
 var import_react = require("react");
-var CDN_DEFAULT = "https://cdn.blindagents.com/report.js";
-function BlindAgentsWidget({
-  apiKey,
-  primaryColor,
-  title,
-  reportBtnText,
-  btnEmoji,
-  btnTooltip,
-  emptyText,
-  userWhatsapp,
-  strategy = "afterInteractive",
-  src = CDN_DEFAULT,
-  onLoad,
-  onError
-}) {
-  const injected = (0, import_react.useRef)(false);
-  (0, import_react.useEffect)(() => {
+
+// src/types.ts
+var CDN_BASE = "https://cdn.blindagents.com";
+
+// src/context.ts
+var BlindAgentsContext = (0, import_react.createContext)({
+  apiKey: "",
+  cdnBase: CDN_BASE,
+  strategy: "afterInteractive"
+});
+
+// src/ReactBlindAgents.tsx
+var import_jsx_runtime = require("react/jsx-runtime");
+function useScript(src, attrs, strategy, onLoad, onError) {
+  const injected = (0, import_react2.useRef)(false);
+  (0, import_react2.useEffect)(() => {
     if (injected.current) return;
     injected.current = true;
-    const existing = document.querySelector(
-      `script[src="${src}"][data-ba-managed]`
-    );
-    if (existing) return;
+    if (document.querySelector(`script[src="${src}"][data-ba-managed]`)) return;
     const el = document.createElement("script");
     el.src = src;
     el.setAttribute("data-ba-managed", "true");
-    el.setAttribute("data-api-key", apiKey);
-    if (primaryColor) el.setAttribute("data-primary-color", primaryColor);
-    if (title) el.setAttribute("data-title", title);
-    if (reportBtnText) el.setAttribute("data-report-btn-text", reportBtnText);
-    if (btnEmoji) el.setAttribute("data-btn-emoji", btnEmoji);
-    if (btnTooltip) el.setAttribute("data-btn-tooltip", btnTooltip);
-    if (emptyText) el.setAttribute("data-empty-text", emptyText);
-    if (userWhatsapp) el.setAttribute("data-user-whatsapp", userWhatsapp);
+    Object.entries(attrs).forEach(([k, v]) => {
+      if (v != null && v !== "") el.setAttribute(k, v);
+    });
     if (onLoad) el.addEventListener("load", () => onLoad());
     if (onError) el.addEventListener("error", () => onError(new Error(`Failed to load ${src}`)));
     const inject = () => {
@@ -67,7 +72,7 @@ function BlindAgentsWidget({
       if (strategy === "lazyOnload") el.async = true;
       document.head.appendChild(el);
     };
-    if (strategy === "lazyOnload" && typeof window !== "undefined" && "requestIdleCallback" in window) {
+    if (strategy === "lazyOnload" && "requestIdleCallback" in window) {
       window.requestIdleCallback(inject);
     } else {
       inject();
@@ -76,11 +81,90 @@ function BlindAgentsWidget({
       el.parentNode?.removeChild(el);
       injected.current = false;
     };
-  }, [apiKey, src]);
+  }, [src]);
+}
+function Report({
+  primaryColor,
+  title,
+  reportBtnText,
+  btnEmoji,
+  btnTooltip,
+  emptyText,
+  userWhatsapp: localWhatsapp,
+  cdnBase: localCdn,
+  strategy: localStrategy,
+  onLoad,
+  onError
+}) {
+  const ctx = import_react2.default.useContext(BlindAgentsContext);
+  const src = `${localCdn ?? ctx.cdnBase}/report.js`;
+  const wa = localWhatsapp ?? ctx.userWhatsapp;
+  useScript(src, {
+    "data-api-key": ctx.apiKey,
+    "data-primary-color": primaryColor,
+    "data-title": title,
+    "data-report-btn-text": reportBtnText,
+    "data-btn-emoji": btnEmoji,
+    "data-btn-tooltip": btnTooltip,
+    "data-empty-text": emptyText,
+    "data-user-whatsapp": wa
+  }, localStrategy ?? ctx.strategy, onLoad, onError);
   return null;
+}
+function Chat({
+  agentId,
+  primaryColor,
+  userWhatsapp: localWhatsapp,
+  cdnBase: localCdn,
+  strategy: localStrategy,
+  onLoad,
+  onError
+}) {
+  const ctx = import_react2.default.useContext(BlindAgentsContext);
+  const src = `${localCdn ?? ctx.cdnBase}/chat.js`;
+  const wa = localWhatsapp ?? ctx.userWhatsapp;
+  useScript(src, {
+    "data-api-key": ctx.apiKey,
+    "data-agent-id": agentId,
+    "data-primary-color": primaryColor,
+    "data-user-whatsapp": wa
+  }, localStrategy ?? ctx.strategy, onLoad, onError);
+  return null;
+}
+function Guide({
+  userWhatsapp: localWhatsapp,
+  cdnBase: localCdn,
+  strategy: localStrategy,
+  onLoad,
+  onError
+}) {
+  const ctx = import_react2.default.useContext(BlindAgentsContext);
+  const src = `${localCdn ?? ctx.cdnBase}/guide.js`;
+  const wa = localWhatsapp ?? ctx.userWhatsapp;
+  useScript(src, {
+    "data-api-key": ctx.apiKey,
+    "data-user-whatsapp": wa
+  }, localStrategy ?? ctx.strategy, onLoad, onError);
+  return null;
+}
+function BlindAgents({
+  apiKey,
+  userWhatsapp,
+  cdnBase = CDN_BASE,
+  strategy = "afterInteractive",
+  children
+}) {
+  return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(BlindAgentsContext.Provider, { value: { apiKey, userWhatsapp, cdnBase, strategy }, children });
+}
+BlindAgents.Report = Report;
+BlindAgents.Chat = Chat;
+BlindAgents.Guide = Guide;
+function BlindAgentsWidget(props) {
+  return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(BlindAgents, { apiKey: props.apiKey, userWhatsapp: props.userWhatsapp, strategy: props.strategy, children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Report, { ...props }) });
 }
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
+  BlindAgents,
   BlindAgentsWidget
 });
 //# sourceMappingURL=index.js.map

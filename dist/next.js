@@ -30,48 +30,130 @@ var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: tru
 // src/next.ts
 var next_exports = {};
 __export(next_exports, {
+  BlindAgents: () => BlindAgents,
   BlindAgentsWidget: () => BlindAgentsWidget
 });
 module.exports = __toCommonJS(next_exports);
 
-// src/NextBlindAgentsWidget.tsx
+// src/NextBlindAgents.tsx
+var import_react2 = __toESM(require("react"));
 var import_script = __toESM(require("next/script"));
+
+// src/context.ts
+var import_react = require("react");
+
+// src/types.ts
+var CDN_BASE = "https://cdn.blindagents.com";
+
+// src/context.ts
+var BlindAgentsContext = (0, import_react.createContext)({
+  apiKey: "",
+  cdnBase: CDN_BASE,
+  strategy: "afterInteractive"
+});
+
+// src/NextBlindAgents.tsx
 var import_jsx_runtime = require("react/jsx-runtime");
-var CDN_DEFAULT = "https://cdn.blindagents.com/report.js";
-function BlindAgentsWidget({
-  apiKey,
+function Report({
   primaryColor,
   title,
   reportBtnText,
   btnEmoji,
   btnTooltip,
   emptyText,
-  userWhatsapp,
-  strategy = "afterInteractive",
-  src = CDN_DEFAULT,
+  userWhatsapp: localWhatsapp,
+  cdnBase: localCdn,
+  strategy: localStrategy,
   onLoad,
   onError
 }) {
+  const ctx = import_react2.default.useContext(BlindAgentsContext);
+  const src = `${localCdn ?? ctx.cdnBase}/report.js`;
+  const wa = localWhatsapp ?? ctx.userWhatsapp ?? "";
   return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
     import_script.default,
     {
       src,
-      strategy,
-      "data-api-key": apiKey,
+      strategy: localStrategy ?? ctx.strategy,
+      "data-api-key": ctx.apiKey,
       "data-primary-color": primaryColor,
       "data-title": title,
       "data-report-btn-text": reportBtnText,
       "data-btn-emoji": btnEmoji,
       "data-btn-tooltip": btnTooltip,
       "data-empty-text": emptyText,
-      "data-user-whatsapp": userWhatsapp ?? "",
+      "data-user-whatsapp": wa,
       onLoad,
       onError: onError ? () => onError(new Error(`Failed to load ${src}`)) : void 0
     }
   );
 }
+function Chat({
+  agentId,
+  primaryColor,
+  userWhatsapp: localWhatsapp,
+  cdnBase: localCdn,
+  strategy: localStrategy,
+  onLoad,
+  onError
+}) {
+  const ctx = import_react2.default.useContext(BlindAgentsContext);
+  const src = `${localCdn ?? ctx.cdnBase}/chat.js`;
+  const wa = localWhatsapp ?? ctx.userWhatsapp ?? "";
+  return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+    import_script.default,
+    {
+      src,
+      strategy: localStrategy ?? ctx.strategy,
+      "data-api-key": ctx.apiKey,
+      "data-agent-id": agentId,
+      "data-primary-color": primaryColor,
+      "data-user-whatsapp": wa,
+      onLoad,
+      onError: onError ? () => onError(new Error(`Failed to load ${src}`)) : void 0
+    }
+  );
+}
+function Guide({
+  userWhatsapp: localWhatsapp,
+  cdnBase: localCdn,
+  strategy: localStrategy,
+  onLoad,
+  onError
+}) {
+  const ctx = import_react2.default.useContext(BlindAgentsContext);
+  const src = `${localCdn ?? ctx.cdnBase}/guide.js`;
+  const wa = localWhatsapp ?? ctx.userWhatsapp ?? "";
+  return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+    import_script.default,
+    {
+      src,
+      strategy: localStrategy ?? ctx.strategy,
+      "data-api-key": ctx.apiKey,
+      "data-user-whatsapp": wa,
+      onLoad,
+      onError: onError ? () => onError(new Error(`Failed to load ${src}`)) : void 0
+    }
+  );
+}
+function BlindAgents({
+  apiKey,
+  userWhatsapp,
+  cdnBase = CDN_BASE,
+  strategy = "afterInteractive",
+  children
+}) {
+  return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(BlindAgentsContext.Provider, { value: { apiKey, userWhatsapp, cdnBase, strategy }, children });
+}
+BlindAgents.Report = Report;
+BlindAgents.Chat = Chat;
+BlindAgents.Guide = Guide;
+function BlindAgentsWidget(props) {
+  return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(BlindAgents, { apiKey: props.apiKey, userWhatsapp: props.userWhatsapp, strategy: props.strategy, children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Report, { ...props }) });
+}
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
+  BlindAgents,
   BlindAgentsWidget
 });
 //# sourceMappingURL=next.js.map
