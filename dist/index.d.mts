@@ -85,10 +85,6 @@ interface ReportWidgetProps extends Omit<BaseWidgetProps, 'apiKey'>, VisualWidge
 interface ChatWidgetProps extends Omit<BaseWidgetProps, 'apiKey'>, VisualWidgetProps {
     /** The agent UUID to connect this chat to */
     agentId?: string;
-    /** Greeting text shown before user sends a message */
-    greeting?: string;
-    /** Placeholder text in the message input */
-    placeholder?: string;
     /** Font size for chat messages e.g. "14px" */
     fontSize?: string;
     /**
@@ -97,6 +93,11 @@ interface ChatWidgetProps extends Omit<BaseWidgetProps, 'apiKey'>, VisualWidgetP
      * Pass any other string to use a custom font stack.
      */
     fontFamily?: string;
+    /**
+     * Enable or disable the notification sound when new messages arrive.
+     * @default true
+     */
+    notificationSound?: boolean;
 }
 /** Root provider props — all children share this apiKey */
 interface BlindAgentsProps extends BaseWidgetProps {
@@ -114,7 +115,7 @@ interface BlindAgentsWidgetProps extends BaseWidgetProps, VisualWidgetProps {
 declare function BlindAgents({ apiKey, userWhatsapp, externalId, apiUrl, cdnBase, strategy, children, }: BlindAgentsProps): react_jsx_runtime.JSX.Element;
 declare namespace BlindAgents {
     var Report: ({ primaryColor, title, reportBtnText, btnEmoji, iconUrl, btnTooltip, emptyText, position, anchor, bubbleSize, panelWidth, panelHeight, userWhatsapp: localWhatsapp, externalId, apiUrl: localApiUrl, cdnBase: localCdn, strategy: localStrategy, onLoad, onError, }: ReportWidgetProps) => null;
-    var Chat: ({ agentId, primaryColor, btnEmoji, iconUrl, btnTooltip, greeting, placeholder, fontSize, fontFamily, position, anchor, bubbleSize, panelWidth, panelHeight, userWhatsapp: localWhatsapp, externalId, apiUrl: localApiUrl, cdnBase: localCdn, strategy: localStrategy, onLoad, onError, }: ChatWidgetProps) => null;
+    var Chat: ({ agentId, primaryColor, btnEmoji, iconUrl, btnTooltip, fontSize, fontFamily, notificationSound, position, anchor, bubbleSize, panelWidth, panelHeight, userWhatsapp: localWhatsapp, externalId, apiUrl: localApiUrl, cdnBase: localCdn, strategy: localStrategy, onLoad, onError, }: ChatWidgetProps) => null;
 }
 /** @deprecated Use <BlindAgents><BlindAgents.Report /></BlindAgents> */
 declare function BlindAgentsWidget(props: ReportWidgetProps & {
