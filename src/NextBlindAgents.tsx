@@ -59,7 +59,7 @@ function Report({
 
 function Chat({
   agentId, primaryColor, btnEmoji, iconUrl, btnTooltip,
-  greeting, placeholder, fontSize, fontFamily,
+  fontSize, fontFamily, notificationSound,
   position, anchor, bubbleSize, panelWidth, panelHeight,
   userWhatsapp: localWhatsapp, externalId, apiUrl: localApiUrl,
   cdnBase: localCdn, strategy: localStrategy, onLoad, onError,
@@ -81,10 +81,9 @@ function Chat({
       data-btn-emoji={btnEmoji}
       data-icon-url={iconUrl}
       data-btn-tooltip={btnTooltip}
-      data-greeting={greeting}
-      data-placeholder={placeholder}
       data-font-size={fontSize}
       data-font-family={fontFamily}
+      data-notification-sound={notificationSound != null ? String(notificationSound) : undefined}
       data-user-whatsapp={wa}
       data-external-id={eid}
       data-position={serializePosition(position)}

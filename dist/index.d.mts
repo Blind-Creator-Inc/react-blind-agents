@@ -47,7 +47,7 @@ interface BaseWidgetProps extends WidgetLayoutProps {
      * Stored as `contact.external_id` in Blind Agents so you can look up
      * tickets and conversations by your own ID via the REST API.
      * Does NOT skip the verification prompt — combine with `userWhatsapp` for that.
-     * Supported by Report, Chat, and Guide widgets.
+     * Supported by Report and Chat widgets.
      */
     externalId?: string;
     /** Override the API base URL (useful for self-hosting or proxying) @default "https://api.blindagents.com" */
@@ -98,9 +98,6 @@ interface ChatWidgetProps extends Omit<BaseWidgetProps, 'apiKey'>, VisualWidgetP
      */
     fontFamily?: string;
 }
-/** Product guides widget */
-interface GuideWidgetProps extends Omit<BaseWidgetProps, 'apiKey'> {
-}
 /** Root provider props — all children share this apiKey */
 interface BlindAgentsProps extends BaseWidgetProps {
     children: React.ReactNode;
@@ -118,11 +115,10 @@ declare function BlindAgents({ apiKey, userWhatsapp, externalId, apiUrl, cdnBase
 declare namespace BlindAgents {
     var Report: ({ primaryColor, title, reportBtnText, btnEmoji, iconUrl, btnTooltip, emptyText, position, anchor, bubbleSize, panelWidth, panelHeight, userWhatsapp: localWhatsapp, externalId, apiUrl: localApiUrl, cdnBase: localCdn, strategy: localStrategy, onLoad, onError, }: ReportWidgetProps) => null;
     var Chat: ({ agentId, primaryColor, btnEmoji, iconUrl, btnTooltip, greeting, placeholder, fontSize, fontFamily, position, anchor, bubbleSize, panelWidth, panelHeight, userWhatsapp: localWhatsapp, externalId, apiUrl: localApiUrl, cdnBase: localCdn, strategy: localStrategy, onLoad, onError, }: ChatWidgetProps) => null;
-    var Guide: ({ userWhatsapp: localWhatsapp, externalId, apiUrl: localApiUrl, position, anchor, bubbleSize, panelWidth, panelHeight, cdnBase: localCdn, strategy: localStrategy, onLoad, onError, }: GuideWidgetProps) => null;
 }
 /** @deprecated Use <BlindAgents><BlindAgents.Report /></BlindAgents> */
 declare function BlindAgentsWidget(props: ReportWidgetProps & {
     apiKey: string;
 }): react_jsx_runtime.JSX.Element;
 
-export { BlindAgents, type BlindAgentsProps, BlindAgentsWidget, type BlindAgentsWidgetProps, type ChatWidgetProps, type GuideWidgetProps, type ReportWidgetProps };
+export { BlindAgents, type BlindAgentsProps, BlindAgentsWidget, type BlindAgentsWidgetProps, type ChatWidgetProps, type ReportWidgetProps };

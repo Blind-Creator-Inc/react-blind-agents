@@ -97,10 +97,6 @@ export interface ReportWidgetProps extends Omit<BaseWidgetProps, 'apiKey'>, Visu
 export interface ChatWidgetProps extends Omit<BaseWidgetProps, 'apiKey'>, VisualWidgetProps {
   /** The agent UUID to connect this chat to */
   agentId?: string;
-  /** Greeting text shown before user sends a message */
-  greeting?: string;
-  /** Placeholder text in the message input */
-  placeholder?: string;
   /** Font size for chat messages e.g. "14px" */
   fontSize?: string;
   /**
@@ -109,6 +105,11 @@ export interface ChatWidgetProps extends Omit<BaseWidgetProps, 'apiKey'>, Visual
    * Pass any other string to use a custom font stack.
    */
   fontFamily?: string;
+  /**
+   * Enable or disable the notification sound when new messages arrive.
+   * @default true
+   */
+  notificationSound?: boolean;
 }
 
 /** Root provider props — all children share this apiKey */

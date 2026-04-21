@@ -273,10 +273,9 @@ All props are inherited by child widgets unless overridden at the widget level.
 | `btnEmoji` | `string` | — | Emoji on the floating launcher button |
 | `iconUrl` | `string` | — | Image URL for the launcher button (replaces emoji) |
 | `btnTooltip` | `string` | — | Tooltip on the launcher button |
-| `greeting` | `string` | — | Greeting shown before the user sends a message |
-| `placeholder` | `string` | — | Input placeholder text |
 | `fontSize` | `string` | — | Font size for chat text, e.g. `"14px"` |
 | `fontFamily` | `string` | — | Font preset: `"System"` · `"Serif"` · `"Mono"` · `"Rounded"`, or a custom stack |
+| `notificationSound` | `boolean` | `true` | Enable or disable notification sound on incoming messages |
 | `position` | `WidgetPosition` | `"bottom-right"` | Floating button position |
 | `anchor` | `string` | — | CSS selector — mount inside an element instead of `<body>` |
 | `bubbleSize` | `number` | `56` | Launcher button diameter in px |

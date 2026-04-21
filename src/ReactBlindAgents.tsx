@@ -98,7 +98,7 @@ function Report({
 
 function Chat({
   agentId, primaryColor, btnEmoji, iconUrl, btnTooltip,
-  greeting, placeholder, fontSize, fontFamily,
+  fontSize, fontFamily, notificationSound,
   position, anchor, bubbleSize, panelWidth, panelHeight,
   userWhatsapp: localWhatsapp, externalId, apiUrl: localApiUrl,
   cdnBase: localCdn, strategy: localStrategy, onLoad, onError,
@@ -110,24 +110,23 @@ function Chat({
   const url = localApiUrl   ?? ctx.apiUrl;
 
   useScript(src, {
-    'data-api-key':       ctx.apiKey,
-    'data-api-url':       url,
-    'data-agent-id':      agentId,
-    'data-primary-color': primaryColor,
-    'data-btn-emoji':     btnEmoji,
-    'data-icon-url':      iconUrl,
-    'data-btn-tooltip':   btnTooltip,
-    'data-greeting':      greeting,
-    'data-placeholder':   placeholder,
-    'data-font-size':     fontSize,
-    'data-font-family':   fontFamily,
-    'data-user-whatsapp': wa,
-    'data-external-id':   eid,
-    'data-position':      serializePosition(position),
-    'data-anchor':        anchor,
-    'data-bubble-size':   bubbleSize != null ? String(bubbleSize) : undefined,
-    'data-panel-width':   panelWidth,
-    'data-panel-height':  panelHeight,
+    'data-api-key':              ctx.apiKey,
+    'data-api-url':              url,
+    'data-agent-id':             agentId,
+    'data-primary-color':        primaryColor,
+    'data-btn-emoji':            btnEmoji,
+    'data-icon-url':             iconUrl,
+    'data-btn-tooltip':          btnTooltip,
+    'data-font-size':            fontSize,
+    'data-font-family':          fontFamily,
+    'data-notification-sound':   notificationSound != null ? String(notificationSound) : undefined,
+    'data-user-whatsapp':        wa,
+    'data-external-id':          eid,
+    'data-position':             serializePosition(position),
+    'data-anchor':               anchor,
+    'data-bubble-size':          bubbleSize != null ? String(bubbleSize) : undefined,
+    'data-panel-width':          panelWidth,
+    'data-panel-height':         panelHeight,
   }, localStrategy ?? ctx.strategy, onLoad, onError);
 
   return null;
