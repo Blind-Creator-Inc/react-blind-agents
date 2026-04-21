@@ -5,6 +5,5 @@ export type {
   BlindAgentsProps,
   ReportWidgetProps,
   ChatWidgetProps,
-  GuideWidgetProps,
   BlindAgentsWidgetProps,
 } from './types';

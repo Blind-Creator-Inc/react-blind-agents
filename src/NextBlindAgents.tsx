@@ -8,7 +8,6 @@ import type {
   BlindAgentsProps,
   ReportWidgetProps,
   ChatWidgetProps,
-  GuideWidgetProps,
 } from './types';
 import { CDN_BASE } from './types';
 
@@ -99,36 +98,6 @@ function Chat({
   );
 }
 
-function Guide({
-  userWhatsapp: localWhatsapp, externalId, apiUrl: localApiUrl,
-  position, anchor, bubbleSize, panelWidth, panelHeight,
-  cdnBase: localCdn, strategy: localStrategy, onLoad, onError,
-}: GuideWidgetProps) {
-  const ctx = React.useContext(BlindAgentsContext);
-  const src = `${localCdn ?? ctx.cdnBase}/guide.js`;
-  const wa  = localWhatsapp ?? ctx.userWhatsapp ?? '';
-  const eid = externalId    ?? ctx.externalId;
-  const url = localApiUrl   ?? ctx.apiUrl;
-
-  return (
-    <Script
-      src={src}
-      strategy={localStrategy ?? ctx.strategy}
-      data-api-key={ctx.apiKey}
-      data-api-url={url}
-      data-user-whatsapp={wa}
-      data-external-id={eid}
-      data-position={serializePosition(position)}
-      data-anchor={anchor}
-      data-bubble-size={bubbleSize != null ? String(bubbleSize) : undefined}
-      data-panel-width={panelWidth}
-      data-panel-height={panelHeight}
-      onLoad={onLoad}
-      onError={onError ? () => onError(new Error(`Failed to load ${src}`)) : undefined}
-    />
-  );
-}
-
 // ── Root provider ─────────────────────────────────────────────────────────────
 
 export function BlindAgents({
@@ -144,7 +113,6 @@ export function BlindAgents({
 
 BlindAgents.Report = Report;
 BlindAgents.Chat   = Chat;
-BlindAgents.Guide  = Guide;
 
 // ── Legacy single-widget export (backwards compat) ───────────────────────────
 /** @deprecated Use <BlindAgents><BlindAgents.Report /></BlindAgents> */

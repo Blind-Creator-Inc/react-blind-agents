@@ -56,7 +56,7 @@ export interface BaseWidgetProps extends WidgetLayoutProps {
    * Stored as `contact.external_id` in Blind Agents so you can look up
    * tickets and conversations by your own ID via the REST API.
    * Does NOT skip the verification prompt — combine with `userWhatsapp` for that.
-   * Supported by Report, Chat, and Guide widgets.
+   * Supported by Report and Chat widgets.
    */
   externalId?: string;
   /** Override the API base URL (useful for self-hosting or proxying) @default "https://api.blindagents.com" */
@@ -109,11 +109,6 @@ export interface ChatWidgetProps extends Omit<BaseWidgetProps, 'apiKey'>, Visual
    * Pass any other string to use a custom font stack.
    */
   fontFamily?: string;
-}
-
-/** Product guides widget */
-export interface GuideWidgetProps extends Omit<BaseWidgetProps, 'apiKey'> {
-  // Guide SDK reads its config from the dashboard — no extra props needed
 }
 
 /** Root provider props — all children share this apiKey */
