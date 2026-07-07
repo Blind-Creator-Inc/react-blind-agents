@@ -2,7 +2,9 @@ import { createContext, useContext } from 'react';
 import { CDN_BASE } from './types';
 
 export interface BlindAgentsContextValue {
-  apiKey: string;
+  /** Optional — only the Report (bug-reporter) widget needs it. The Chat
+   *  widget authenticates by agent id alone. */
+  apiKey?: string;
   userWhatsapp?: string;
   externalId?: string;
   apiUrl?: string;
@@ -11,7 +13,6 @@ export interface BlindAgentsContextValue {
 }
 
 export const BlindAgentsContext = createContext<BlindAgentsContextValue>({
-  apiKey: '',
   cdnBase: CDN_BASE,
   strategy: 'afterInteractive',
 });

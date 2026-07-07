@@ -110,7 +110,7 @@ function Chat({
   const url = localApiUrl   ?? ctx.apiUrl;
 
   useScript(src, {
-    'data-api-key':              ctx.apiKey,
+    // No data-api-key: the chat widget authenticates by agent id alone.
     'data-api-url':              url,
     'data-agent-id':             agentId,
     'data-primary-color':        primaryColor,
@@ -147,6 +147,24 @@ export function BlindAgents({
 
 BlindAgents.Report = Report;
 BlindAgents.Chat   = Chat;
+
+// ── Standalone chat widget (agent-id-only, one component) ────────────────────
+/** Drop-in chat widget — the ElevenLabs-style one-liner. Needs only
+ *  `agentId`; no provider, no API key.
+ *  @example <ChatWidget agentId="agent_123" /> */
+export function ChatWidget(props: ChatWidgetProps) {
+  return (
+    <BlindAgents
+      apiUrl={props.apiUrl}
+      cdnBase={props.cdnBase}
+      strategy={props.strategy}
+      userWhatsapp={props.userWhatsapp}
+      externalId={props.externalId}
+    >
+      <Chat {...props} />
+    </BlindAgents>
+  );
+}
 
 // ── Legacy single-widget export (backwards compat) ───────────────────────────
 /** @deprecated Use <BlindAgents><BlindAgents.Report /></BlindAgents> */

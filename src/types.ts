@@ -93,10 +93,11 @@ export interface ReportWidgetProps extends Omit<BaseWidgetProps, 'apiKey'>, Visu
   emptyText?: string;
 }
 
-/** Webchat widget */
+/** Webchat widget — installs with ONLY the agent id (no API key), the
+ *  same shape as ElevenLabs' `<elevenlabs-convai agent-id=…>`. */
 export interface ChatWidgetProps extends Omit<BaseWidgetProps, 'apiKey'>, VisualWidgetProps {
-  /** The agent UUID to connect this chat to */
-  agentId?: string;
+  /** The agent UUID to connect this chat to (required). */
+  agentId: string;
   /** Font size for chat messages e.g. "14px" */
   fontSize?: string;
   /**
@@ -112,8 +113,11 @@ export interface ChatWidgetProps extends Omit<BaseWidgetProps, 'apiKey'>, Visual
   notificationSound?: boolean;
 }
 
-/** Root provider props — all children share this apiKey */
-export interface BlindAgentsProps extends BaseWidgetProps {
+/** Root provider props. `apiKey` is optional — only needed when a
+ *  `<BlindAgents.Report>` (bug-reporter) child is used; the Chat widget
+ *  needs none. */
+export interface BlindAgentsProps extends Omit<BaseWidgetProps, 'apiKey'> {
+  apiKey?: string;
   children: React.ReactNode;
 }
 
