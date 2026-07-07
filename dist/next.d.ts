@@ -81,10 +81,11 @@ interface ReportWidgetProps extends Omit<BaseWidgetProps, 'apiKey'>, VisualWidge
     /** Text shown when there are no reports @default "No issues reported yet." */
     emptyText?: string;
 }
-/** Webchat widget */
+/** Webchat widget — installs with ONLY the agent id (no API key), the
+ *  same shape as ElevenLabs' `<elevenlabs-convai agent-id=…>`. */
 interface ChatWidgetProps extends Omit<BaseWidgetProps, 'apiKey'>, VisualWidgetProps {
-    /** The agent UUID to connect this chat to */
-    agentId?: string;
+    /** The agent UUID to connect this chat to (required). */
+    agentId: string;
     /** Font size for chat messages e.g. "14px" */
     fontSize?: string;
     /**
@@ -99,8 +100,11 @@ interface ChatWidgetProps extends Omit<BaseWidgetProps, 'apiKey'>, VisualWidgetP
      */
     notificationSound?: boolean;
 }
-/** Root provider props — all children share this apiKey */
-interface BlindAgentsProps extends BaseWidgetProps {
+/** Root provider props. `apiKey` is optional — only needed when a
+ *  `<BlindAgents.Report>` (bug-reporter) child is used; the Chat widget
+ *  needs none. */
+interface BlindAgentsProps extends Omit<BaseWidgetProps, 'apiKey'> {
+    apiKey?: string;
     children: React.ReactNode;
 }
 /** @deprecated Use <BlindAgents apiKey="..."><BlindAgents.Report /></BlindAgents> instead */
@@ -117,9 +121,13 @@ declare namespace BlindAgents {
     var Report: ({ primaryColor, title, reportBtnText, btnEmoji, iconUrl, btnTooltip, emptyText, position, anchor, bubbleSize, panelWidth, panelHeight, userWhatsapp: localWhatsapp, externalId, apiUrl: localApiUrl, cdnBase: localCdn, strategy: localStrategy, onLoad, onError, }: ReportWidgetProps) => react_jsx_runtime.JSX.Element;
     var Chat: ({ agentId, primaryColor, btnEmoji, iconUrl, btnTooltip, fontSize, fontFamily, notificationSound, position, anchor, bubbleSize, panelWidth, panelHeight, userWhatsapp: localWhatsapp, externalId, apiUrl: localApiUrl, cdnBase: localCdn, strategy: localStrategy, onLoad, onError, }: ChatWidgetProps) => react_jsx_runtime.JSX.Element;
 }
+/** Drop-in chat widget — the ElevenLabs-style one-liner. Needs only
+ *  `agentId`; no provider, no API key.
+ *  @example <ChatWidget agentId="agent_123" /> */
+declare function ChatWidget(props: ChatWidgetProps): react_jsx_runtime.JSX.Element;
 /** @deprecated Use <BlindAgents><BlindAgents.Report /></BlindAgents> */
 declare function BlindAgentsWidget(props: ReportWidgetProps & {
     apiKey: string;
 }): react_jsx_runtime.JSX.Element;
 
-export { BlindAgents, type BlindAgentsProps, BlindAgentsWidget, type BlindAgentsWidgetProps, type ChatWidgetProps, type ReportWidgetProps };
+export { BlindAgents, type BlindAgentsProps, BlindAgentsWidget, type BlindAgentsWidgetProps, ChatWidget, type ChatWidgetProps, type ReportWidgetProps };

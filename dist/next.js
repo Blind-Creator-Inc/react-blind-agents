@@ -31,7 +31,8 @@ var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: tru
 var next_exports = {};
 __export(next_exports, {
   BlindAgents: () => BlindAgents,
-  BlindAgentsWidget: () => BlindAgentsWidget
+  BlindAgentsWidget: () => BlindAgentsWidget,
+  ChatWidget: () => ChatWidget
 });
 module.exports = __toCommonJS(next_exports);
 
@@ -47,7 +48,6 @@ var CDN_BASE = "https://cdn.blindagents.com";
 
 // src/context.ts
 var BlindAgentsContext = (0, import_react.createContext)({
-  apiKey: "",
   cdnBase: CDN_BASE,
   strategy: "afterInteractive"
 });
@@ -143,7 +143,6 @@ function Chat({
     {
       src,
       strategy: localStrategy ?? ctx.strategy,
-      "data-api-key": ctx.apiKey,
       "data-api-url": url,
       "data-agent-id": agentId,
       "data-primary-color": primaryColor,
@@ -178,12 +177,26 @@ function BlindAgents({
 }
 BlindAgents.Report = Report;
 BlindAgents.Chat = Chat;
+function ChatWidget(props) {
+  return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+    BlindAgents,
+    {
+      apiUrl: props.apiUrl,
+      cdnBase: props.cdnBase,
+      strategy: props.strategy,
+      userWhatsapp: props.userWhatsapp,
+      externalId: props.externalId,
+      children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Chat, { ...props })
+    }
+  );
+}
 function BlindAgentsWidget(props) {
   return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(BlindAgents, { apiKey: props.apiKey, userWhatsapp: props.userWhatsapp, strategy: props.strategy, children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Report, { ...props }) });
 }
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
   BlindAgents,
-  BlindAgentsWidget
+  BlindAgentsWidget,
+  ChatWidget
 });
 //# sourceMappingURL=next.js.map

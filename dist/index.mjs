@@ -9,7 +9,6 @@ var CDN_BASE = "https://cdn.blindagents.com";
 
 // src/context.ts
 var BlindAgentsContext = createContext({
-  apiKey: "",
   cdnBase: CDN_BASE,
   strategy: "afterInteractive"
 });
@@ -125,7 +124,7 @@ function Chat({
   const eid = externalId ?? ctx.externalId;
   const url = localApiUrl ?? ctx.apiUrl;
   useScript(src, {
-    "data-api-key": ctx.apiKey,
+    // No data-api-key: the chat widget authenticates by agent id alone.
     "data-api-url": url,
     "data-agent-id": agentId,
     "data-primary-color": primaryColor,
@@ -158,11 +157,25 @@ function BlindAgents({
 }
 BlindAgents.Report = Report;
 BlindAgents.Chat = Chat;
+function ChatWidget(props) {
+  return /* @__PURE__ */ jsx(
+    BlindAgents,
+    {
+      apiUrl: props.apiUrl,
+      cdnBase: props.cdnBase,
+      strategy: props.strategy,
+      userWhatsapp: props.userWhatsapp,
+      externalId: props.externalId,
+      children: /* @__PURE__ */ jsx(Chat, { ...props })
+    }
+  );
+}
 function BlindAgentsWidget(props) {
   return /* @__PURE__ */ jsx(BlindAgents, { apiKey: props.apiKey, userWhatsapp: props.userWhatsapp, strategy: props.strategy, children: /* @__PURE__ */ jsx(Report, { ...props }) });
 }
 export {
   BlindAgents,
-  BlindAgentsWidget
+  BlindAgentsWidget,
+  ChatWidget
 };
 //# sourceMappingURL=index.mjs.map
