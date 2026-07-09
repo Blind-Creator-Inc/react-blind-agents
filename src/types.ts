@@ -111,6 +111,8 @@ export interface ChatWidgetProps extends Omit<BaseWidgetProps, 'apiKey'>, Visual
    * @default true
    */
   notificationSound?: boolean;
+  /** Header title shown instead of the agent's name. */
+  title?: string;
   /**
    * Voice-only widget: keeps the identify flow (OTP + name/email) but lands
    * on a call-centric home with one big "start call" action instead of the
