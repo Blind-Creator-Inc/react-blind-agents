@@ -111,6 +111,13 @@ export interface ChatWidgetProps extends Omit<BaseWidgetProps, 'apiKey'>, Visual
    * @default true
    */
   notificationSound?: boolean;
+  /**
+   * Voice-only widget: keeps the identify flow (OTP + name/email) but lands
+   * on a call-centric home with one big "start call" action instead of the
+   * chat surface. Renders `data-voice-only="true"`.
+   * @default false
+   */
+  voiceOnly?: boolean;
 }
 
 /** Root provider props. `apiKey` is optional — only needed when a

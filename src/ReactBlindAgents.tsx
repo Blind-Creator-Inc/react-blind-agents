@@ -99,6 +99,7 @@ function Report({
 function Chat({
   agentId, primaryColor, btnEmoji, iconUrl, btnTooltip,
   fontSize, fontFamily, notificationSound,
+  voiceOnly,
   position, anchor, bubbleSize, panelWidth, panelHeight,
   userWhatsapp: localWhatsapp, externalId, apiUrl: localApiUrl,
   cdnBase: localCdn, strategy: localStrategy, onLoad, onError,
@@ -120,6 +121,7 @@ function Chat({
     'data-font-size':            fontSize,
     'data-font-family':          fontFamily,
     'data-notification-sound':   notificationSound != null ? String(notificationSound) : undefined,
+    'data-voice-only':           voiceOnly ? 'true' : undefined,
     'data-user-whatsapp':        wa,
     'data-external-id':          eid,
     'data-position':             serializePosition(position),
