@@ -276,6 +276,8 @@ All props are inherited by child widgets unless overridden at the widget level.
 | `fontSize` | `string` | — | Font size for chat text, e.g. `"14px"` |
 | `fontFamily` | `string` | — | Font preset: `"System"` · `"Serif"` · `"Mono"` · `"Rounded"`, or a custom stack |
 | `notificationSound` | `boolean` | `true` | Enable or disable notification sound on incoming messages |
+| `title` | `string` | — | Header title shown instead of the agent's name |
+| `voiceOnly` | `boolean` | `false` | Calls-only widget: the visitor still verifies (OTP + name/email), then lands on a call screen instead of the chat |
 | `position` | `WidgetPosition` | `"bottom-right"` | Floating button position |
 | `anchor` | `string` | — | CSS selector — mount inside an element instead of `<body>` |
 | `bubbleSize` | `number` | `56` | Launcher button diameter in px |
@@ -288,6 +290,13 @@ All props are inherited by child widgets unless overridden at the widget level.
 | `strategy` | see above | — | Per-widget override |
 | `onLoad` | `() => void` | — | Called when the script loads |
 | `onError` | `(error: Error) => void` | — | Called if the script fails to load |
+
+> **Panel-managed appearance:** operators can also save the widget's color,
+> position, title, icon, notification sound, voice-only mode and the
+> "Continue on WhatsApp" number from the Blind Agents dashboard
+> (Channels → *Customize widget*). Those saved options apply to every
+> embedded widget at load time — any prop you set explicitly here always
+> wins over the panel values.
 
 ---
 

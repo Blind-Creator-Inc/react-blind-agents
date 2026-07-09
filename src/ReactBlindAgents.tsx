@@ -97,7 +97,7 @@ function Report({
 }
 
 function Chat({
-  agentId, primaryColor, btnEmoji, iconUrl, btnTooltip,
+  agentId, primaryColor, btnEmoji, iconUrl, btnTooltip, title,
   fontSize, fontFamily, notificationSound,
   voiceOnly,
   position, anchor, bubbleSize, panelWidth, panelHeight,
@@ -118,6 +118,7 @@ function Chat({
     'data-btn-emoji':            btnEmoji,
     'data-icon-url':             iconUrl,
     'data-btn-tooltip':          btnTooltip,
+    'data-title':                title,
     'data-font-size':            fontSize,
     'data-font-family':          fontFamily,
     'data-notification-sound':   notificationSound != null ? String(notificationSound) : undefined,
